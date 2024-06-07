@@ -6,6 +6,7 @@ package com.mycompany.todo;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -45,6 +46,7 @@ public class MaintoDo extends javax.swing.JFrame {
     
     public MaintoDo() {
         initComponents();
+        jLabel4.setVisible(false);
         complete.setVisible(false);
         jTextField2.setVisible(false);
         getContentPane().setBackground(new java.awt.Color(30,30,30));
@@ -56,28 +58,24 @@ public class MaintoDo extends javax.swing.JFrame {
     
     public static MaintoDo toDoFrame;
     
-    public void deleteTasks(){
+    public void deleteTasks() {
         ArrayList<Component> ComponentstoRemove = new ArrayList<>();
-        Component[] components = taskPanel.getComponents();
-        for(Component component : components){
-            if(component instanceof JPanel taskContainer){
-                for(Component taskComponent : taskContainer.getComponents() ){
-                    if(taskComponent instanceof JCheckBox checkBox){
-                        if(checkBox.isSelected()){
-                            ComponentstoRemove.add(taskContainer);
-                            break;
-                           // tasklabel = new JLabel(tasks.remove(0));
-                            
-                        }
+        for (JPanel taskContainer : AllTasks) {
+            for (Component taskComponent : taskContainer.getComponents()) {
+                if (taskComponent instanceof JCheckBox checkBox) {
+                    if (checkBox.isSelected()) {
+                        ComponentstoRemove.add(taskContainer);
+                        break;
+                        // tasklabel = new JLabel(tasks.remove(0));
                     }
                 }
             }
         }
-        for(int i =ComponentstoRemove.size()-1 ;i>=0; i--){
+        for (int i = ComponentstoRemove.size() - 1; i >= 0; i--) {
             taskPanel.remove(ComponentstoRemove.get(i));
         }
         taskPanel.revalidate();
-        taskPanel.repaint();      
+        taskPanel.repaint();
     }
     public void alltasks(){
         taskPanel.removeAll();
@@ -88,8 +86,7 @@ public class MaintoDo extends javax.swing.JFrame {
             }else{
                 taskPanel.add(panel);
             }
-        } 
-        
+        }   
     }
     public void todaytasks() {
         DateTimeFormatter format = DateTimeFormatter.ofPattern("dd-MM-yyyy");
@@ -99,11 +96,10 @@ public class MaintoDo extends javax.swing.JFrame {
         for (JPanel taskContainer : AllTasks) {
             boolean hastodaytask = false;
             for (Component taskComponent : taskContainer.getComponents()) {
-                if (taskComponent instanceof JLabel dateLabel) {
+                if (taskComponent instanceof JLabel dateLabel && !dateLabel.isVisible()) {
                     try {
                         LocalDate taskdate = LocalDate.parse(dateLabel.getText(), format);
                         String date = taskdate.format(format);
-                        jLabel4.setText(date);
                         if (taskdate.equals(today)) {
                             hastodaytask = true;
                             break;
@@ -137,32 +133,28 @@ public class MaintoDo extends javax.swing.JFrame {
         tasklabel.setForeground(Color.WHITE);
         timelabel.setForeground(Color.WHITE);datelabel.setForeground(Color.WHITE);desclabel.setForeground(Color.WHITE);
 
-        datelabel.getText();
+        datelabel.setVisible(false);
+        //Format date from generic dd-mm-yyyy to an readable format
         DateTimeFormatter format = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-        
-        LocalDate today = LocalDate.now();
         LocalDate taskdate = LocalDate.parse(datelabel.getText(), format);
         DayOfWeek dow = taskdate.getDayOfWeek();
         Integer dom = taskdate.getDayOfMonth();
         Month Month = taskdate.getMonth();
         String month = Month.getDisplayName(TextStyle.SHORT, Locale.ENGLISH);
         String dayofweek = dow.getDisplayName(TextStyle.SHORT, Locale.ENGLISH);
-        String date = taskdate.format(format);
-        JLabel dateL = new JLabel();dateL.setForeground(Color.WHITE);
-        dateL.setText(dayofweek +" "+ dom + ","+ month);
+        JLabel Displaydate = new JLabel();Displaydate.setForeground(Color.WHITE);
+        Displaydate.setText(dayofweek +" "+ month + ", "+ dom);
         
         // Create a task container panel with BoxLayout.X_AXIS
         JPanel taskContainer = new JPanel();
         taskContainer.setBackground(new java.awt.Color(25, 37, 56));
         taskContainer.setLayout(new BoxLayout(taskContainer, BoxLayout.X_AXIS));
         taskContainer.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));        
-        //jLabel4.setText(tasks.get(3));
-       
+        taskContainer.setFont(new java.awt.Font("Tahoma", Font.PLAIN, 12));
         checkbox = new JCheckBox();
         delButton = new JButton();
         delButton.setBounds(100, 100, 60, 60);
         checkbox.setBounds(100, 100, 60, 60);
-
         delButton.setText("DEL");
         var text = ""; checkbox.setForeground(Color.WHITE);
         checkbox.setText(text);
@@ -188,16 +180,16 @@ public class MaintoDo extends javax.swing.JFrame {
         textContainer.setBorder(BorderFactory.createEmptyBorder(0,0,5,0));
         textContainer.add(desclabel);
         timeContainer.add(timelabel);
-        taskContainer.add(textContainer);
-
-        taskContainer.add(Box.createHorizontalStrut(25));   
-        taskContainer.add(timeContainer);
-        //taskContainer.add(timelabel);
+        taskContainer.add(Box.createHorizontalStrut(5));        
+        taskContainer.add(checkbox);
         taskContainer.add(Box.createHorizontalStrut(15));        
-        //taskContainer.add(dateL);
+        taskContainer.add(textContainer);
+        taskContainer.add(Box.createHorizontalStrut(35));   
+        taskContainer.add(timeContainer);
+        taskContainer.add(Box.createHorizontalStrut(15));        
+        taskContainer.add(Displaydate);
         taskContainer.add(datelabel);
         taskContainer.add(Box.createHorizontalStrut(25));        
-        taskContainer.add(checkbox);
         
         taskPanel.add(taskContainer, gbc);
         panelConstraintsMap.put(taskContainer, gbc);    
@@ -254,8 +246,9 @@ public class MaintoDo extends javax.swing.JFrame {
             }
         });
 
-        UpcomingBtn.setBackground(new java.awt.Color(102, 102, 102));
+        UpcomingBtn.setBackground(new java.awt.Color(25, 37, 56));
         UpcomingBtn.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        UpcomingBtn.setForeground(new java.awt.Color(255, 255, 255));
         UpcomingBtn.setText("Upcoming");
         UpcomingBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -330,7 +323,7 @@ public class MaintoDo extends javax.swing.JFrame {
         complete.setText("Completed");
 
         jLabel4.setBackground(new java.awt.Color(0, 0, 255));
-        jLabel4.setText("jLabel3");
+        jLabel4.setText("Filter");
 
         taskPanel.setBackground(new java.awt.Color(173, 216, 230));
         taskPanel.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
@@ -416,11 +409,11 @@ public class MaintoDo extends javax.swing.JFrame {
                 .addComponent(titlehead)
                 .addGap(18, 18, 18)
                 .addGroup(MainPageLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel4)
-                    .addComponent(head2))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(head2)
+                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 11, Short.MAX_VALUE)
                 .addComponent(complete, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 18, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(taskPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 353, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -437,7 +430,7 @@ public class MaintoDo extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
                 .addComponent(MainPage, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -453,34 +446,6 @@ public class MaintoDo extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void tasksActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tasksActionPerformed
-        // TODO add your handling code here:
-        alltasks();
-        jTextField2.setVisible(false);
-        titlehead.setText("Tasks");
-        head2.setText("Task List");
-           
-    }//GEN-LAST:event_tasksActionPerformed
-
-    private void UpcomingBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_UpcomingBtnActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_UpcomingBtnActionPerformed
-
-    private void mydayActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mydayActionPerformed
-        // TODO add your handling code here:
-        todaytasks();
-        jTextField2.setVisible(true);
-        titlehead.setText("My Day");
-        LocalDate today = LocalDate.now();
-        DayOfWeek dayOweek = today.getDayOfWeek();
-        Month month = today.getMonth();
-        int dom = today.getDayOfMonth();
-        String dow = dayOweek.getDisplayName(TextStyle.FULL, Locale.ENGLISH);
-        String getmonth = month.getDisplayName(TextStyle.FULL, Locale.ENGLISH);
-        head2.setText(dow + "," + " " + getmonth + " " + dom);
-        
-    }//GEN-LAST:event_mydayActionPerformed
-
     private void addtaskActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addtaskActionPerformed
         Input input = new Input();
         input.setVisible(true);// TODO add your handling code here:
@@ -493,23 +458,6 @@ public class MaintoDo extends javax.swing.JFrame {
                 deleteTasks();
         }
     }//GEN-LAST:event_DeleteActionPerformed
-
-    private void tasksKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tasksKeyPressed
-        // TODO add your handling code here:
-        tasks.setBackground(new java.awt.Color(173,216,230));
-    }//GEN-LAST:event_tasksKeyPressed
-
-    private void mydayKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_mydayKeyPressed
-        // TODO add your handling code here:
-        myday.setBackground(new java.awt.Color(173,216,230));
-
-    }//GEN-LAST:event_mydayKeyPressed
-
-    private void tasksKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tasksKeyReleased
-        // TODO add your handling code here:
-        tasks.setBackground(new java.awt.Color(25,37,56));
-
-    }//GEN-LAST:event_tasksKeyReleased
 
     private void jTextField2KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField2KeyPressed
         // TODO add your handling code here:
@@ -534,18 +482,62 @@ public class MaintoDo extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jTextField2FocusLost
 
-    private void newlistActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newlistActionPerformed
+    private void jTextField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField2ActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_newlistActionPerformed
+        String newtask = jTextField2.getText();
+    }//GEN-LAST:event_jTextField2ActionPerformed
 
     private void newlistKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_newlistKeyPressed
         // TODO add your handling code here:
     }//GEN-LAST:event_newlistKeyPressed
 
-    private void jTextField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField2ActionPerformed
+    private void newlistActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newlistActionPerformed
         // TODO add your handling code here:
-        String newtask = jTextField2.getText();
-    }//GEN-LAST:event_jTextField2ActionPerformed
+        
+    }//GEN-LAST:event_newlistActionPerformed
+
+    private void mydayKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_mydayKeyPressed
+        // TODO add your handling code here:
+        myday.setBackground(new java.awt.Color(173,216,230));
+    }//GEN-LAST:event_mydayKeyPressed
+
+    private void mydayActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mydayActionPerformed
+        // TODO add your handling code here:
+        todaytasks();
+        jTextField2.setVisible(true);
+        titlehead.setText("My Day");
+        LocalDate today = LocalDate.now();
+        DayOfWeek dayOweek = today.getDayOfWeek();
+        Month month = today.getMonth();
+        int dom = today.getDayOfMonth();
+        String dow = dayOweek.getDisplayName(TextStyle.FULL, Locale.ENGLISH);
+        String getmonth = month.getDisplayName(TextStyle.FULL, Locale.ENGLISH);
+        head2.setText(dow + "," + " " + getmonth + " " + dom);
+
+    }//GEN-LAST:event_mydayActionPerformed
+
+    private void UpcomingBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_UpcomingBtnActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_UpcomingBtnActionPerformed
+
+    private void tasksKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tasksKeyReleased
+        // TODO add your handling code here:
+        tasks.setBackground(new java.awt.Color(25,37,56));
+    }//GEN-LAST:event_tasksKeyReleased
+
+    private void tasksKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tasksKeyPressed
+        // TODO add your handling code here:
+       // tasks.setBackground(new java.awt.Color(173,216,230));
+    }//GEN-LAST:event_tasksKeyPressed
+
+    private void tasksActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tasksActionPerformed
+        // TODO add your handling code here:
+        alltasks();
+        jTextField2.setVisible(false);
+        titlehead.setText("Tasks");
+        head2.setText("Task List");
+
+    }//GEN-LAST:event_tasksActionPerformed
 
     /**
      * @param args the command line arguments
